@@ -159,6 +159,78 @@ class DataStream():
 
 
 def main() -> None:
+    print("=== Code Nexus - Data Pipeline ===\n")
+
+    print("Initialize Data Stream...\n")
+
+    stream = DataStream()
+    stream.print_processors_stats()
+
+    print("\nRegistering Processors\n")
+
+    numeric = NumericProcessor()
+    text = TextProcessor()
+    log = LogProcessor()
+    stream.register_processor(numeric)
+    stream.register_processor(text)
+    stream.register_processor(log)
+
+    batch = [
+        'Hello world',
+        [3.14, -1, 2.71],
+        [
+            {
+                'log_level': 'WARNING',
+                'log_message': 'Telnet access! Use ssh instead'
+            },
+            {
+                'log_level': 'INFO',
+                'log_message': 'User wil is connected'
+            }
+        ],
+        42,
+        ['Hi', 'five']
+    ]
+    print(f"Send first batch of data on stream: {batch}\n")
+    stream.process_stream(batch)
+
+    stream.print_processors_stats()
+
+    print("\nSend 3 processed data from each processor to a CSV plugin:")
+    csv = CSVExporter()
+    stream.output_pipeline(3, csv)
+    print("")
+
+    stream.print_processors_stats()
+
+    new_batch = [
+        21,
+        ['I love AI', 'LLMs are wonderful', 'Stay healthy'],
+        [
+            {
+                'log_level': 'ERROR',
+                'log_message': '500 server crash'
+            },
+            {
+                'log_level': 'NOTICE',
+                'log_message': 'Certificate expires in 10 days'
+            }
+        ],
+        [32, 42, 64, 84, 128, 168],
+        'World hello'
+    ]
+
+    print(f"\nSend another batch of data: {new_batch}\n")
+    stream.process_stream(new_batch)
+
+    stream.print_processors_stats()
+
+    print("\nSend 5 processed data from each processor to a JSON plugin:")
+    json = JSONExporter()
+    stream.output_pipeline(5, json)
+    print("")
+
+    stream.print_processors_stats()
 
 
 if __name__ == "__main__":
